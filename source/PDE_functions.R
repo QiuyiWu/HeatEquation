@@ -3,6 +3,17 @@ Laplacian <- function(y_k, dx){
   diff(diff(y_k)/dx) /dx
 }
 
+#Laplacian = function(y, dx){
+#  len = length(y)
+#  delta2 = NULL
+#  delta2[1] = (y[2]-y[1])/dx^2
+#  delta2[len] = (y[len - 1] - y[len])/dx^2
+
+#  for(i in 2:(len - 1)){
+#    delta2[i] = (y[i+1] + y[i-1] - 2*y[i])/dx^2
+# } 
+#  return(delta2)
+#}
 
 HeatEqn <- function(y0, dx, g, dt, Nt){
   yhat = array(NA, Nt)
@@ -12,6 +23,23 @@ HeatEqn <- function(y0, dx, g, dt, Nt){
   }
   return(yhat)
 }
+
+
+#HeatEqn = function(y0, dx, g, dt, Nt, HISTORY = TRUE){
+  
+#  y = list()
+#  y[[1]] = y0
+  
+#  for (i in 2:(Nt+1)){ 
+#    y[[i]] = y[[i-1]] + dt*g*Laplacian(y[[i-1]],dx)
+#  }
+  
+#  if(HISTORY){
+#    return(y)
+#  }else{
+#    return(y[[Nt+1]])
+#  }
+#}
 
 # ------ Example -------
 
