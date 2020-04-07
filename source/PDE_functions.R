@@ -1,6 +1,6 @@
 
 Laplacian <- function(y_k, dx){
-  delta <- array(NA, length(y_k))
+  delta <- NULL
   len = length(y_k)
   # boundary condition
   delta[1] = (y_k[2]-y_k[1])/dx^2
@@ -15,10 +15,16 @@ HeatEqn <- function(y0, dx, g, dt, Nt, history = TRUE){
   yhat = list()
   yhat[[1]] = y0
   for (i in 1:(Nt+1)) {
-    yhat[[i+1]] = yhat[[i]] + g* Laplacian(yhat[[i]], dx)[i] * dt
+    yhat[[i+1]] = yhat[[i]] + g* Laplacian(yhat[[i]], dx) * dt
   }
   ifelse(history, return(yhat), return(yhat[[Nt+2]]))
 }
+
+# Example 
+x <- seq(-1,1,0.01)
+y <- x^2 + rnorm(length(x), 0, 0.05) # real value  
+hq <- HeatEqn(y0 = y, dx = 0.1, g = 1, dt = 0.001, Nt = 2000, history = T)
+
 
 
 #Laplacian = function(y, dx){
