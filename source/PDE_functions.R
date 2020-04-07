@@ -19,7 +19,13 @@ HeatEqn <- function(y0, dx, g, dt, Nt, history = TRUE){
   ifelse(history, return(yhat), return(yhat[[Nt+2]]))
 }
 
+
+
+
+
+#=====================================================================================
 # Example 
+
 x <- seq(-1,1,0.01)
 y <- x^2 + rnorm(length(x), 0, 0.05) # real value  
 hq <- HeatEqn(y0 = y, dx = 0.1, g = 1, dt = 0.001, Nt = 2000, history = T)
