@@ -3,12 +3,19 @@
 kern = function(x) exp(-x^2/2) # gaussion kernel
 
 kernsmooth = function(x,y,band){
- kij <- outer(x, x, function(x,y) kern((x-y)/(band*0.3706506)))
- s <- kij/rowSums(kij)
- return(s %*% y)    
+  kij <- outer(x, x, function(x,y) kern((x-y)/(band*0.3706506)))
+  s <- kij/rowSums(kij)
+  return(s %*% y)    
 }
 
-yhat = kernsmooth(x,y,2)              
+               
+# Example               
+x <- seq(-1,1,0.1)
+y <- x^2 + rnorm(length(x), 0, 0.1)                             
+yhat = kernsmooth(x,y,2)      
+plot(x,yhat, col=2)             
+               
+               
 
 #--------------------- Old Version --------------------------
 
