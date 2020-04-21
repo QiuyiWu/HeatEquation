@@ -34,9 +34,7 @@ gaussian.smooth = function(x,y,b){
   }
   return(yhat)
 }
-#--------------------------------------------------------------- 
-             
-             
+          
 #example
 set.seed(1)
 x <- seq(-1,1,0.1)
