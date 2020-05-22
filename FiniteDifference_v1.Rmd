@@ -1,0 +1,180 @@
+---
+title: "Attempt1"
+runtime: shiny
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Inputs and Outputs
+
+You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
+
+```{r eruptions, echo=FALSE}
+library(shiny)
+
+
+funn = function(x, g){
+    g*x
+}
+
+Laplacian <- function(y_k, dx){
+    delta <- NULL
+    len = length(y_k)
+    # boundary condition
+    delta[1] =(y_k[2]-y_k[1])/dx^2 
+    delta[len] = (y_k[len-1]- y_k[len])/dx^2
+    delta[2: (len-1)] <- diff(diff(y_k)/dx) /dx
+    return(delta)
+}
+
+
+HeatEqn <- function(y0, dx, g, dt, Nt, history = TRUE){
+    yhat = list()
+    yhat[[1]] = y0
+    for (i in 1:(Nt+1)) {
+        yhat[[i+1]] = yhat[[i]] + g* Laplacian(yhat[[i]], dx) * dt
+    }
+    ifelse(history, return(yhat), return(yhat[[Nt+2]]))
+}
+
+
+x = seq(-1,1,length.out = 20)
+dx = x[2] - x[1]
+set.seed(1)
+y = x^2 + rnorm(20,0,0.1)
+hq = HeatEqn(y, dx, x^2, 0.001, Nt = 200, history = F)
+plot(x,y)
+lines(x, hq)
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+
+    # Application title
+    titlePanel("Data Generator"),
+
+    # Sidebar with a slider input for number of bins 
+    sidebarLayout(
+        sidebarPanel(
+            textInput(inputId = "seed",
+                      label = "Choose set.seed",
+                      value = "1"),
+            
+            sliderInput("xrange",
+                        "Range of x:",
+                        min = -10,
+                        max = 10,
+                        value = c(-1,1)), 
+            
+           textInput(inputId = "equation", 
+                  label = "Underlying function", 
+                       value = "x^2"),
+            
+            sliderInput(inputId = "nobs",
+                        label = "Number of observations",
+                        min = 2,
+                        max = 1000,
+                        value = 20),
+            
+            sliderInput(inputId = "mean",
+                        label = "Mean of noise",
+                        min = -10,
+                        max = 10,
+                        value = 0,
+                        step = 0.01),
+            
+           
+           
+           textInput(inputId = "sdtext", 
+                     label = "Standard deviation of noise",
+                     value = "0.1"), 
+           
+           textInput(inputId = "g", 
+                     label = "Value of g",
+                     value = "x^2"), 
+           
+           sliderInput(inputId = "dt",
+                       label = "Set value for dt",
+                       min = 0,
+                       max = 0.0009,
+                       value = 0.0001),
+           
+           sliderInput(inputId = "Nt",
+                       label = "Set value for Nt",
+                       min = 1,
+                       max = 4000,
+                       value = 200)
+           
+        ),
+
+        # Show a plot of the generated distribution
+        mainPanel(
+           plotOutput("distPlot")
+        )
+    )
+)
+
+
+
+# Define server logic required to draw a histogram
+server <- function(input, output) {
+    
+    
+  
+    equation = function(x){
+        
+        eval(parse(text = input$equation))   
+    }
+    
+    sdtext = function(x){
+        eval(parse(text = input$sdtext))
+    }
+    
+    diffusi = function(x){
+        eval(parse(text = input$g))
+    }
+    
+     xvalue = reactive({
+        seq(input$xrange[1], input$xrange[2], length.out = input$nobs)
+    })
+    noise = reactive({
+        set.seed(input$seed)
+        rnorm(input$nobs, mean = input$mean, sd = input$sd)})
+    
+    noise2 = reactive({
+        set.seed(input$seed)
+        rnorm(input$nobs, mean = input$mean, sd = sdtext(xvalue()))})
+  
+    
+   
+    yvalue = reactive({
+        equation(xvalue()) + noise2()
+    })
+    
+  #  hqvalue = reactive({
+   #     HeatEqn(yvalue(), 0.001, g = input$g, dt = input$dt, Nt= input$Nt, history = F)
+    #})
+   
+    output$distPlot <- renderPlot({
+    x = xvalue()
+    dx = x[1] - x[2]
+    y = yvalue()
+    y1 = equation(x)
+    hq = HeatEqn(y, dx, diffusi(x),input$dt, input$Nt, history = F)
+ 
+    plot(x,y)
+    lines(x, hq, col = "red")
+    lines(x,y1, col = "black")
+ 
+    })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+
+```
+
+
