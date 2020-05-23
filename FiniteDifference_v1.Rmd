@@ -17,9 +17,7 @@ You can embed Shiny inputs and outputs in your document. Outputs are automatical
 library(shiny)
 
 
-funn = function(x, g){
-    g*x
-}
+
 
 Laplacian <- function(y_k, dx){
     delta <- NULL
