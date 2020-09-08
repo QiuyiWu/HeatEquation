@@ -1,51 +1,117 @@
 
 
-Laplacian <- function(y_k, dx){
-  delta <- NULL
-  len = length(y_k)
-  # boundary condition
-  delta[1] =(y_k[2]-y_k[1])/dx^2 
-  delta[len] = (y_k[len-1]- y_k[len])/dx^2
-  delta[2: (len-1)] <- diff(diff(y_k)/dx) /dx
-  return(delta)
+circular.dis = function(x1, xn, x, const){
+  start_point = x1 
+  end_point = xn
+  if(x <= const){
+    d1 = const - x
+    d2 = (x - start_point) + (end_point - const)
+    
+    return(min(d1^2, d2^2))
+  }else
+    d1 = const - x
+    d2 = (const - start_point) + (end_point - x)
+    return(min(d1^2, d2^2))
 }
 
+#testing the circular distance
 
-HeatEqn <- function(y0, dx, g, dt, Nt, history = TRUE){
-  yhat = list()
-  yhat[[1]] = y0
-  for (i in 1:(Nt+1)) {
-    yhat[[i+1]] = yhat[[i]] + g* Laplacian(yhat[[i]], dx) * dt
+x = seq(1,11,1)
+circular.dis(1, 10, 1,10)
+
+#apply circular.dis for a vector
+circular.dis.vec = function(x, const){
+  y = rep(NA, length(x))
+  for (i in 1:length(x)) {
+    y[i] = circular.dis(x[1], x[length(x)],x[i],const)
+   
   }
-  ifelse(history, return(yhat), return(yhat[[Nt+2]]))
+  return(y)
+}
+
+#test circular.dis.vect
+
+z = circular.dis.vec(x,7)
+
+gauss.kernel = function(x, y,ind,b){
+ # k = exp(-((x[ind] - x)^2)/(2*b))*(1/sqrt(2*pi*b))
+  k = exp(-circular.dis.vec(x,x[ind])/(2*b)) 
+  #print(k)
+  yhat = sum(k*y)/sum(k)
+  return(yhat)
+  
 }
 
 
-kern = function(x) exp(-x^2/2) # gaussion kernel
 
-kernsmooth = function(x,y,band){
-  kij <- outer(x, x, function(x,y) kern((x-y)/(band*0.3706506))) 
-  s <- kij/rowSums(kij)
-  return(s %*% y)    
+gaussian.smooth = function(x,y,b){
+  yhat = vector(length = length(y))
+  for(i in 1:length(y)){
+    yhat[i] = gauss.kernel(x,y,i,b[i])
+  }
+  return(yhat)
 }
 
+################################################################
+
+set.seed(1)
+x = seq(-2*pi + 1, 2*pi + 1, pi/32)
+u =  sin(x)
+
+sd = 1
+var = sd^2
+y = u + rnorm(length(u),0,sd)
+n = length(y)
+
+u2 = -sin(x)# #second derivative of u
+b = (var/(2*sqrt(pi)*u2^2))^(2/5) #calculate optimal bandwidth
+
+plot(x, b, ylim = c(-0,10))
+plot(x, b)
+plot(x, (u2)^2)
 
 
-#example 
-x <- seq(0,2*pi,0.1)
-y <- sin(x) # real value  
-hq <- HeatEqn(y0 = y, dx = 0.1, g = 1, dt = 0.001, Nt = 69, history = F)
-ks = ksmooth(x,y, kernel = "normal", bandwidth = 0.3706505)
-ks2 = kernsmooth(x,y,1)
+
+plot(x,y, main= "Standard Deviation 100")
+lines(x, u, col = "blue")
+lines(x, gaussian.smooth(x, y, b), col = "red")
+lines(x,gaussian.smooth(x,y, rep(0.1, length(x))), col = "green")
+legend("top", legend = c("Underlying curve", "Optimal Curve"), col = c("blue", "red"), lty = 1)
+
+SSE = (gaussian.smooth(x,y, b) - u)^2
+MSE = mean(SSE)
+
+#MSE5 = mean(SSE[c(1:390)])
 
 
-plot(x, y)
-lines(x , hq, col = "red")
-lines(ks$x, ks$y, col = "blue")
-lines(x, ks2, col = "green")
-legend("topright", legend = c("Finite Diff", "Ksmooth"), col= c("red", "blue"), lty = 1)
+bandw = 10^(seq(-8,8,1))
+MSE_b = NULL
+#bandw
+#(gaussian.smooth(x,y,bandw[1]) - u)^2
 
+#MSE_b5 = NULL
+for (i in 1:length(bandw)) {
+  SSE_vec  = (gaussian.smooth(x,y, rep(bandw[i], length(x)) ) - u)^2
+  # print(SSE_vec)
+  MSE_b[i] = mean(SSE_vec)
+  # print(MSE_b[i])
+  # MSE_b5[i] = mean(SSE_vec[1:390])
+  
+}
+#####################################################################
+#The optimal bandwidth does not have the lowest MSE. This is due to the tail behavior????
 
-#the relationship between the ksmooth and finite difference
+plot(seq(-8,8,1), MSE_b, ylab = "MSE", xlab = "bandwidth (10^x)", ylim = c(0, max(MSE_b)), xlim = c(-8,8), main = "MSE for different bandwidth value" )
+abline(h = MSE, col = "red") #MSE of optimal bandwidth
+legend("topright", legend = c("Optimal bandwidth"), col = c("red"), lty = 1)
 
-(((1*0.3706506)^2)/2)/0.001
+#Since bandwidth value 10^-1 has the lowest MSE, we are going to plot and compare this with the optimal curve. 
+
+plot(x,y, main= "Standard Deviation 100")
+lines(x, u, col = "blue")
+lines(x, gaussian.smooth(x, y, b), col = "red")
+lines(x,gaussian.smooth(x,y, rep(0.1, length(x))), col = "green")
+legend("top", legend = c("Underlying curve", "Optimal Curve", "Bandwidth of 0.1"), col = c("blue", "red", "green"), lty = 1)
+
+min(MSE_b)
+MSE
