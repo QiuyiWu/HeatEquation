@@ -40,14 +40,13 @@ MSE = mean(SSE, na.rm = T)  # remvoe the NA point (when x=0)
 bandw = 10^(seq(-8,8,length.out = 101))
 MSE_b = NULL
 for (i in 1:length(bandw)) {
-  SSE_vec  = (gaussian.smooth(x,y,bandw) - u)^2
-  MSE_b[i] = mean(SSE_vec[1:i])
+  SSE_vec  = (gaussian.smooth(x,y,rep(bandw[i], length(x)) ) - u)^2
+  MSE_b[i] = mean(SSE_vec)
 }
 
 plot(seq(-8,8,length.out = 101), MSE_b,pch = 20, ylab = "MSE", xlab = "bandwidth (10^x)", ylim = c(0, max(MSE_b)), xlim = c(-8,8), main = "MSE for different bandwidth value" )
 abline(h = MSE, col = "red") #MSE of optimal bandwidth
 legend("topleft", legend = c("Optimal bandwidth"), col = c("red"), lty = 1,  bty = "n")
-
 
 
 
@@ -80,8 +79,8 @@ MSE = mean(SSE, na.rm = T)
 bandw = 10^(seq(-8,8,length.out = 129))
 MSE_b = NULL
 for (i in 1:length(bandw)) {
-  SSE_vec  = (gaussian.smooth(x,y,bandw) - u)^2
-  MSE_b[i] = mean(SSE_vec[1:i])
+  SSE_vec  = (gaussian.smooth(x,y,rep(bandw[i], length(x))) - u)^2
+  MSE_b[i] = mean(SSE_vec)
 }
 
 plot(seq(-8,8,length.out = 129), MSE_b,pch = 20, ylab = "MSE", xlab = "bandwidth (10^x)", ylim = c(0, max(MSE_b)), xlim = c(-8,8), main = "MSE for different bandwidth value" )
