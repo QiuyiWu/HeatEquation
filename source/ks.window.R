@@ -1,3 +1,5 @@
+# limit finite window of kernel smoother
+
 gauss.kernel = function(x, y,ind,b,win,proportion){
   b = max(b, 1e-6)
   ran = (max(range(x)) - min(range(x)))*proportion
