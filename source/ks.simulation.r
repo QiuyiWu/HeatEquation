@@ -3,7 +3,7 @@
 # plot MSE vs x at every point
 
 ##################### Function ##################################
-# For fixed bandwidth (Gaussian kernel without window 
+# For fixed bandwidth (Gaussian kernel without window)
 gauss.kernel2 = function(x, y,ind,b){
   k = exp(-((x[ind] - x)^2)/(2*b))*(1/sqrt(2*pi*b))
   yhat = sum(k*y)/sum(k)
