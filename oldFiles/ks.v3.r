@@ -1,3 +1,6 @@
+#This code deals with the issue of boundary point. 
+#Note: this method works well only with seasonal data (aka. the data with sine or cosine curve)
+
 gauss.kernel = function(x, y,ind,b){
   dv = pmin(abs(x[ind] - x), x[length(x)]- x[1] - abs(x[ind] - x))  # circular boundary (pick up the minimum distance)
   k = exp(-(dv^2)/(2*b))*(1/sqrt(2*pi*b))

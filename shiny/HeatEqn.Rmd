@@ -1,0 +1,189 @@
+---
+title: "Heat Equation"
+runtime: shiny
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r eruptions, echo=FALSE}
+library(shiny)
+library(ggplot2)
+
+# PDE
+Laplacian <- function(y_k, dx){
+  delta <- NULL
+  len = length(y_k)
+  # boundary condition
+  delta[1] =(y_k[2]-y_k[1])/dx^2 
+  delta[len] = (y_k[len-1]- y_k[len])/dx^2
+  delta[2: (len-1)] <- diff(diff(y_k)/dx) /dx
+  return(delta)
+}
+HeatEqn <- function(y0, dx, C, sd, dt, Nt, history = TRUE){
+  yhat = list()
+  yhat[[1]] = y0
+  for (i in 1:(Nt+1)) {
+    g = C* yhat[[i]]/sd
+    yhat[[i+1]] = yhat[[i]] + g* Laplacian(yhat[[i]], dx) * dt
+  }
+  ifelse(history, return(yhat), return(yhat[[Nt+2]]))
+}
+
+
+###################################################################
+
+# Shinny
+
+ui <- fluidPage(
+  
+  # Application title
+  #titlePanel("Data Generator"),
+  
+  # Sidebar with a slider input for number of bins 
+  fluidRow(
+    column(4, 
+      textInput(inputId = "seed",
+                label = "Choose set.seed",
+                value = "1"),
+      
+      textInput(inputId = "equation", 
+                label = "Underlying function", 
+                value = "x^2"),
+      
+      sliderInput("xrange",
+                  "Range of x:",
+                  min = -10,
+                  max = 10,
+                  value = c(-1,1) )
+    ),
+    column(4,
+      sliderInput(inputId = "nobs",
+                  label = "Number of observations",
+                  min = 2,
+                  max = 300,
+                  value = 20),
+      
+      sliderInput(inputId = "mean",
+                  label = "Mean of noise",
+                  min = -10,
+                  max = 10,
+                  value = 0.25,
+                  step = 0.01),
+      
+      textInput(inputId = "sdtext", 
+                label = "Standard deviation of noise",
+                value = "0.1")
+     ),
+    column(4, 
+      sliderInput(inputId = "dt",
+                  label = "Set value for dt",
+                  min = 0,
+                  max = 0.0001,
+                  value = 0.0001),
+      
+      sliderInput(inputId = "Nt",
+                  label = "Set value for Nt",
+                  min = 1,
+                  max = 4000,
+                  value = 200),
+      #textInput(inputId = "g", 
+      #          label = "Value of g",
+      #          value = "x^2")
+      sliderInput(inputId = "C",
+                  label = "Set value for C",
+                  min = 0.01,
+                  max = 10,
+                  value = 1)
+     )
+  ),
+  
+  fluidRow(
+    column(6, 
+           plotOutput("Plot1")),
+    column(6, 
+           plotOutput("Plot2")
+           )
+  )
+)
+
+
+
+
+
+
+
+
+###################################################################
+
+
+server <- function(input, output){
+
+  equation = function(x){ eval(parse(text = input$equation)) }
+  
+   sdtext = function(x){ eval(parse(text = input$sdtext)) }
+  
+  # diffusi = function(x){ eval(parse(text = input$g)) }
+  C =  function(x){ eval(parse(text = input$C)) }
+  
+  xvalue = reactive({ seq(input$xrange[1], input$xrange[2], length.out = input$nobs) })
+  
+  noise = reactive({
+    set.seed(input$seed)
+    rnorm(input$nobs, mean = input$mean, sd = input$sdtext)})
+  
+  noise2 = reactive({
+    set.seed(input$seed)
+    rnorm(input$nobs, mean = input$mean, sd = sdtext(xvalue()))})
+
+  yvalue = reactive({ equation(xvalue()) + noise2() })
+  
+  #  hqvalue = reactive({
+  #     HeatEqn(yvalue(), 0.001, g = input$g, dt = input$dt, Nt= input$Nt, history = F)
+  #})
+  
+  output$Plot1 <- renderPlot({
+    x = xvalue()
+    dx = x[2] - x[1]
+    y = yvalue()
+    y1 = equation(x)
+    hq = HeatEqn(y, dx, input$C, noise2()+0.001, input$dt, input$Nt, history = F)
+    
+    
+    df <- data.frame(cbind(x,y,y1,hq))
+    ggplot(df) + 
+      geom_point(aes(y = y, x = x, color = '1')) +
+      geom_line(aes(y = y1, x = x, color = '2'), linetype = "twodash") + 
+      geom_line(aes(y = hq, x = x, color = '3')) + 
+      scale_color_discrete(name = "Y", labels = c("observations", "real value", "fitted value")) +
+      ggtitle("One Dimensional Finite Difference Method")
+    
+    
+  })
+  
+  output$Plot2 <- renderPlot({
+    x = xvalue()
+    dx = x[2] - x[1]
+    y = yvalue()
+    y1 = equation(x)
+    hq = HeatEqn(y, dx, input$C, noise2()+0.001, input$dt, input$Nt, history = F)
+    ratio = y1 /(noise2()+0.001)
+    g = ratio * input$C
+    df2 <- data.frame(cbind(x,ratio,g))
+    ggplot(df2) + 
+      geom_line(aes(y = ratio, x = x, color = '1'), linetype = "twodash") + 
+      geom_line(aes(y = g, x = x, color = '2')) + 
+      scale_color_discrete(name = "Y", labels = c("ratio", "g")) +
+      ggtitle("Smoothing Strategy: Tuning of g")
+    
+    
+  })
+    
+}
+
+shinyApp(ui = ui, server = server)
+```
+

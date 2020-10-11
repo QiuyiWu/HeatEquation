@@ -16,7 +16,7 @@ yhat = kernsmooth(x,y,2)
 plot(x,yhat, col=2)             
                
 #--Relationship between the ksmooth and finite difference--- 
-       2T = sigma^2  where T = dt*Nt and sigma = band*0.3706506    
+#   2T = sigma^2  where T = dt*Nt and sigma = band*0.3706506    
 
 #--------------------- Old Version --------------------------
 

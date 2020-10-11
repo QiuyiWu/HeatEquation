@@ -1,9 +1,14 @@
+# simularion for 1000 times
+# plot MSE vs bandwidth of fix/optimal bandwidth
+# plot MSE vs x at every point
+
+##################### Function ##################################
+# Gaussian kernel without window 
 gauss.kernel2 = function(x, y,ind,b){
   k = exp(-((x[ind] - x)^2)/(2*b))*(1/sqrt(2*pi*b))
   yhat = sum(k*y)/sum(k)
   return(yhat)
 }
-
 gaussian.smooth2 = function(x,y,b){
   yhat = vector(length = length(y))
   for(i in 1:length(y)){
@@ -12,22 +17,19 @@ gaussian.smooth2 = function(x,y,b){
   return(yhat)
 }
 
+# Gaussian kernel with window 
 gauss.kernel = function(x, y,ind,b,win,proportion){
   b = max(b, 1e-6)
   ran = (max(range(x)) - min(range(x)))*proportion
-  
   xfix = x[ind]
-  
   ub =  min(xfix + win*b, xfix + ran/2) #upperbound
   lb =  max(xfix - win*b, xfix - ran/2) #lowerbound
-  
   xnew = x[x >= lb & x <= ub]
   ynew = y[x >= lb & x <= ub]
   k = exp(-((xfix - xnew)^2)/(2*b))
   yhat = sum(k*ynew)/sum(k)
   return(yhat)
 }
-
 gaussian.smooth = function(x,y,b,win,proportion){
   yhat = vector(length = length(y))
   for(i in 1:length(y)){
@@ -37,9 +39,7 @@ gaussian.smooth = function(x,y,b,win,proportion){
 }
 
 
-
-
-
+##################### Example ################################
 
 win = 2
 proportion = 0.2

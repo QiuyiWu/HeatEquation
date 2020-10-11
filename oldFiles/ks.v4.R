@@ -1,4 +1,5 @@
-# limit finite window of kernel smoother
+# This code deals with the issue of bandwidth -> infinity. 
+# We set limit finite [Window] of the kernel smoother
 
 gauss.kernel = function(x, y,ind,b,win,proportion){
   b = max(b, 1e-6)
