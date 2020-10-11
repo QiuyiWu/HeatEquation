@@ -3,7 +3,7 @@
 # plot MSE vs x at every point
 
 ##################### Function ##################################
-# Gaussian kernel without window 
+# For fixed bandwidth (Gaussian kernel without window 
 gauss.kernel2 = function(x, y,ind,b){
   k = exp(-((x[ind] - x)^2)/(2*b))*(1/sqrt(2*pi*b))
   yhat = sum(k*y)/sum(k)
@@ -17,7 +17,7 @@ gaussian.smooth2 = function(x,y,b){
   return(yhat)
 }
 
-# Gaussian kernel with window 
+# For adaptive bandwidth (Gaussian kernel with window) 
 gauss.kernel = function(x, y,ind,b,win,proportion){
   b = max(b, 1e-6)
   ran = (max(range(x)) - min(range(x)))*proportion
