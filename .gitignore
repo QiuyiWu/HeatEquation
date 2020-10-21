@@ -1,0 +1,9 @@
+# tell git to ignore certain files
+src/.Rhistory
+src/.cache
+src/results
+src/*_cache
+src/*/figure-latex
+latex/*.aux
+latex/*.log
+latex/*.synctex.gz
