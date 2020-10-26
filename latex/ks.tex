@@ -9,6 +9,14 @@
 
 \maketitle
 
+\section{Introduction}
+ 
+It is universally acknowledged that observed data in the physical world is, to some extent, contaminated with random noise. Hence, one can express our data generating mechanism using two components: a true underlying oracle function u(x) and a random component epsilon. It arises naturally that one would like to know u(x) as it is the data generator's essence. Yet, due to the fundamental sorrow -the limited observations of an infinite world, we fail to achieve the oracle function. Instead, we can only estimate it based on our finite noise infested observations. 
+
+For decades, statisticians have been proposed various methods to estimate the oracle function u(x). One of the non-parametric ways is to use direct diffusion to smooth away all the noise. In an absolute non-rigorous sense, the direction diffusion process achieves the oracle risk by (weighted) averaging each observation neighbor. Each time we do this, our estimated function will be closer to the true function. Until, at a finite time T, we will achieve our goal. After that, at time T + 1, the estimated function will again be further away. People coin the term "over-smoothing" to indicate this phenomenon. Our goal is to discover the optimal T where we are closest to the truth given an observed data set. 
+
+However, this seemingly simple task proves to be somewhat challenging. This is because the diffusion process is not widely used among statisticians. Luckily, it is known that the famous kernel (Gaussian) smoother and the direct diffusion (heat equation) are equivalents. Their connection is expressed through the equation T = 0.5 $\sigma$. T denotes the smoothing time in the direction process. And $\sigma$ denotes the spatial width of the Gaussian smoother. Therefore, finding optimal time T can be translated to the problem of finding the optimal sigma. In statistics literature, the optimal sigma is found to be $(1/2N\pi||f''||^2)^{2/5}$ a constant for every point x. This is a significant constraint. Hence, in this paper, we will allow the spatial bandwidth to be different for each point. In the next section, we will derive the optimal sigma for each observation point. We will do simulations to show that our "adaptive" bandwidth performs better than the best-fixed bandwidth. 
+
 \section{One way of thinking}
 
 First order Taylor expansion: 
