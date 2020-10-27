@@ -5,5 +5,6 @@ src/results
 src/*_cache
 src/*/figure-latex
 latex/*.aux
+latex/*.auto
 latex/*.log
 latex/*.synctex.gz
