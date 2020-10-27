@@ -43,7 +43,7 @@ ks.fixed <- function(x, y, bandwidth, smooth.window, type=c("Euclidean", "circul
   ## match.arg gives warning when the input is not one of the
   ## declared values
   type <- match.arg(type)
-  yhat <- rep(0, N)
+  N <- length(x); yhat <- rep(0, N)
   if (type=="Euclidean") {
     for (i in 1:N){
       ## y.within.window.R contains all values to be smoothed to the
@@ -99,7 +99,7 @@ ks.variable <- function(x, y, bandwidth, smooth.window, type=c("Euclidean", "cir
   ## match.arg gives warning when the input is not one of the
   ## declared values
   type <- match.arg(type)
-  yhat <- rep(0, N)
+  N <- length(x); yhat <- rep(0, N)
   if (type=="Euclidean") {
     for (i in 1:N){
       if (bandwidth[i]==0){
