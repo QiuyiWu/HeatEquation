@@ -12,6 +12,22 @@
 
 \maketitle
 
+\section{Notes}
+\label{sec:notes}
+
+\begin{itemize}
+\item 10/27/2020. We reviewed Dr. Qiu's code/documentation. Todos:
+  \begin{enumerate}
+  \item Compare our old code with Dr. Qiu's new code one more time.
+  \item Try to implement the circular smoother (at least for the fixed bandwidth case).
+  \item We've already studied the mathematical connections between the classical (homogeneous) heat equation and Gaussian kernel smoothing. We need to document this important connection in this document.
+  \item We need to think: what is the mathematical connection between \emph{adaptive Gaussian kernel smoother} and \emph{inhomogeneous} heat equation?  Rationale: we've already derived (based on large sample theory) the ``optimal'' variable bandwidth for kernel smoother. If the kernel smoother is equivalent to an inhomogeneous differential equation, it means that we can then use an efficient numerical DE solver (e.g., those based on finite element method) to do kernel smoothing, especially for multi-dimensional cases.
+  \item In the long run, we need to develop a practical estimation procedure for $x(t)$ and $\sigma^{2}(t)$, better with some model selection procedure so the entire estimation procedure can be automated.
+  \item Multi-dimensional!! (a) the curse of dimensionality, (b) much more complicated boundary to deal with.
+  \end{enumerate}
+\end{itemize}
+
+
 \section{Introduction}
  
 It is universally acknowledged that observed data with respect to the underlying patterns we are seeking for in the physical world is, to some extent, contaminated with random noise. Commonly, the observed data would be expressed into two parts: the systematic component (i.e.: a true underlying oracle function $u(x)$) and a random component (i.e.: noise $\epsilon$). Yet, due to the fundamental sorrow of the limited observations in an infinite world, we may fail to achieve the oracle function. In fact, we can only estimate it based on our finite noise infested observations. 
