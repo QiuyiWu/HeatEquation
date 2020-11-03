@@ -81,12 +81,49 @@ ks.fixed <- function(x, y, bandwidth, smooth.window, type=c("Euclidean", "circul
       yhat[i] <- sum(y.within.window*w)/sum(w)
     }
   } else if (type=="circular") {
-    stop("I have not implemented it yet!")
+    for (i in 1:N){
+      ## y.within.window.R contains all values to be smoothed to the
+      ## right of y[j] ; dist.R are the distances (in x) from these
+      ## neighboring ys to y[i]
+      y.within.window.R <- c(); dist.R <- c()
+      j <- 0; dj <- 0
+      while (dj<=smooth.window & j<=N-i) {
+        dj <- pmin(abs(x[i+j]-x[i]), x[length(x)]- x[1] - abs(x[i+j]-x[i])) 
+        dist.R <- c(dist.R, dj)
+        y.within.window.R <- c(y.within.window.R, y[i+j])
+        j <- j+1
+      }
+      ## remove the last entry if dj>smooth.window
+      if (dj>smooth.window) {
+        y.within.window.R <- y.within.window.R[-j]
+        dist.R <- dist.R[-j]
+      }
+      ## now the left side
+      y.within.window.L <- c(); dist.L <- c()
+      j <- -1; dj <- 0
+      while (dj<=smooth.window & j>=1-i) {
+        dj <- pmin(abs(x[i+j]-x[i]), x[length(x)]- x[1] - abs(x[i+j]-x[i]))
+        dist.L <- c(dist.L, dj)
+        y.within.window.L <- c(y.within.window.L, y[i+j])
+        j <- j-1
+      }
+      ## remove the last entry if dj>smooth.window
+      if (dj>smooth.window) {
+        y.within.window.L <- y.within.window.L[j+1]
+        dist.L <- dist.L[j+1]
+      }
+      ## now compute the weighted average
+      y.within.window <- c(y.within.window.L, y.within.window.R)
+      dd <- c(dist.L, dist.R)
+      w <- dnorm(dd, sd=bandwidth)
+      yhat[i] <- sum(y.within.window*w)/sum(w)
+    }
   } else {
     stop("Only two type of smoothers are currently implemented: Euclidean and circular.")
   }
   return(yhat)
 }
+
 
 ## I decide to implement the engine of the variable bandwidth
 ## smoothing in a separate function, because it may be significantly
@@ -148,12 +185,62 @@ ks.variable <- function(x, y, bandwidth, smooth.window, type=c("Euclidean", "cir
       }
     }
   } else if (type=="circular") {
-    stop("I have not implemented it yet!")
+    for (i in 1:N){
+      if (bandwidth[i]==0){
+        ## in this special case, no smoothing is needed
+        yhat[i] <- y[i]
+      } else { #smoothing is required
+        ## y.within.window.R contains all values to be smoothed to the
+        ## right of y[j] ; dist.R are the distances (in x) from these
+        ## neighboring ys to y[i]
+        y.within.window.R <- c(); dist.R <- c()
+        j <- 0; dj <- 0
+        while (dj<=smooth.window[i] & j<=N-i) {
+          dj <- pmin(abs(x[i+j]-x[i]), x[length(x)]- x[1] - abs(x[i+j]-x[i])) 
+          dist.R <- c(dist.R, dj)
+          y.within.window.R <- c(y.within.window.R, y[i+j])
+          j <- j+1
+        }
+        ## remove the last entry if dj>smooth.window[i]
+        if (dj>smooth.window[i]) {
+          y.within.window.R <- y.within.window.R[-j]
+          dist.R <- dist.R[-j]
+        }
+        ## now the left side
+        y.within.window.L <- c(); dist.L <- c()
+        j <- -1; dj <- 0
+        while (dj<=smooth.window[i] & j>=1-i) {
+          dj <- pmin(abs(x[i+j]-x[i]), x[length(x)]- x[1] - abs(x[i+j]-x[i]))
+          dist.L <- c(dist.L, dj)
+          y.within.window.L <- c(y.within.window.L, y[i+j])
+          j <- j-1
+        }
+        ## remove the last entry if dj>smooth.window[i]
+        if (dj>smooth.window[i]) {
+          y.within.window.L <- y.within.window.L[j+1]
+          dist.L <- dist.L[j+1]
+        }
+        y.within.window <- c(y.within.window.L, y.within.window.R)
+        ## now compute the weighted average
+        if (bandwidth[i]==Inf) {
+          ## use simple average over the smoothing window
+          yhat[i] <- mean(y.within.window)
+        } else {
+          ## this is the typical case
+          dd <- c(dist.L, dist.R)
+          w <- dnorm(dd, sd=bandwidth[i])
+          yhat[i] <- sum(y.within.window*w)/sum(w)
+        }
+      }
+    }
   } else {
     stop("Only two type of smoothers are currently implemented: Euclidean and circular.")
   }
   return(yhat)
 }
+
+
+
 
 ## this is the main wrapper
 ks <- function(x, y, bandwidth, min.bandwidth="auto", max.bandwidth="auto", max.window="auto", type=c("Euclidean", "circular")){
@@ -161,7 +248,7 @@ ks <- function(x, y, bandwidth, min.bandwidth="auto", max.bandwidth="auto", max.
   N <- length(x); xsteps <- diff(x); xrange <- max(x)-min(x)
   if (min.bandwidth=="auto") min.bandwidth <- min(xsteps)
   if (max.bandwidth=="auto") max.bandwidth <- 10*xrange
-  if (max.window=="auto") max.window <- xrange/5
+  if (max.window=="auto") max.window <- xrange/5  # initially xrange/5
   ## classify the smoothing strategies based on bandwidth
   if (length(bandwidth)==1){ #fixed bandwidth
     if (bandwidth <= min.bandwidth) {
@@ -171,7 +258,7 @@ ks <- function(x, y, bandwidth, min.bandwidth="auto", max.bandwidth="auto", max.
       ## just return the simple sample mean
       yhat <- rep(mean(y), N)
     } else { #this is the general case
-      smooth.window <- min(4*bandwidth, max.window)
+      smooth.window <- min(400*bandwidth, max.window)  # initially 4*bandwidth
       yhat <- ks.fixed(x, y, bandwidth, smooth.window, type=type)
     }
   } else if (length(bandwidth)!=N){
@@ -180,9 +267,8 @@ ks <- function(x, y, bandwidth, min.bandwidth="auto", max.bandwidth="auto", max.
     ## process bandwith and smooth.window for ks.variable()
     bandwidth <- replace(bandwidth, bandwidth<=min.bandwidth, 0)
     bandwidth <- replace(bandwidth, bandwidth>=max.bandwidth, Inf)
-    smooth.window <- pmin(4*bandwidth, max.window)
+    smooth.window <- pmin(400*bandwidth, max.window)  # initially 4*bandwidth
     yhat <- ks.variable(x, y, bandwidth, smooth.window)
   }
   return(yhat)
 }
-

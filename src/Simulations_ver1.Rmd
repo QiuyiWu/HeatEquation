@@ -1,13 +1,15 @@
 ---
-title: Simulations on Adaptive Kernel Smoothers
-author: Qiuyi Wu, Cuong Pham, Xing Qiu
+title: "Simulations on Adaptive Kernel Smoothers"
+author: "Qiuyi Wu, Cuong Pham, Xing Qiu"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
-abstract: "Optional: An abstract with font Arial 10 to describe the study."
 output:
   pdf_document:
+    fig_caption: yes
     fig_height: 6
     fig_width: 6
-    fig_caption: true
+  html_document:
+    df_print: paged
+abstract: 'Optional: An abstract with font Arial 10 to describe the study.'
 ---
 
 ```{r init, echo=FALSE, include=FALSE, message=FALSE}
@@ -104,8 +106,8 @@ set.seed(123)
 for (j in 1:reps){
   print(paste0("Repetition: ", j))
   y <- u + sd1*rnorm(N)
-  yhat.adapt <- ks(x, y, bandwidth=b)
-  yhat.fixed <- sapply(logbs, function(lb) ks(x,y,bandwidth=10^lb))
+  yhat.adapt <- ks(x, y, bandwidth=b, type = "Euclidean")
+  yhat.fixed <- sapply(logbs, function(lb) ks(x,y,bandwidth=10^lb, type = "Euclidean"))
   Res <- sweep(cbind(yhat.adapt,yhat.fixed), 1, u)
   MSEtab[j,] <- colMeans(Res^2)
 }
@@ -144,9 +146,87 @@ lines(x, yhat.fixed[, 11], col=4)
 
 As we can see from the left panel in this figure, adaptive smoothing had the best fit in the middle part of the figure; both green and blue curves *overfitted* (i.e., *under-smoothed*) the data, suggesting that a **larger** value of bandwidth should be used in that region.  However, judging from the right panel, the blue curve already started to *underfit* (over-smooth) the data at the boundary. It implies that using a larger bandwidth will only lead to worse fitting near the two boundaries. In short, the optimal adaptive smoothing achieved the best trade-off between fitting the middle (requires more smoothing) and the boundaries (requires less smoothing).
 
-## Sim2: Estimating a Periodic Function on $S^1$
+## Sim2: Estimating a Periodic Function on $[-2\pi, 2\pi]$
+```{r sim2-true-signal, fig.cap='Optimal bandwidth computed based on our theoretical derivations.'}
 
-More work is needed.
+## specify parameters that generates data in Sim2
+N <- 501
+## Note that you shouldn't use "sd" as an object; it *replaces* an
+## important system function sd()!!
+sd1 <- 1; var1 <- sd1^2
+
+## an evenly-spaced grid of x defined on [-5,5]
+x <- seq(-2*pi, 2*pi, length.out=N); dx <- 10/(N-1)
+## the true function to be estimated
+u <- sin(x)
+## its second order derivative
+D2u <- cos(x)
+## the optimal bandwidth
+b = (var1/(2*sqrt(pi)*D2u^2))^(2/5)
+
+## the fixed bandwidths
+min.logb <- -3; max.logb <- 3; nb <- 11
+logbs <- seq(min.logb, max.logb, length.out=nb)
+
+## number of repetitions
+reps <- 200
+
+plot(x, b, type="l", ylim=c(0,5), xlab="x", ylab="Adaptive bandwidth")
+
+```
+In this simulation, we aim to estimate the following function
+$$u(x) := \sin(x), \qquad x\in [-2\pi, 2\pi] $$
+
+Again we use the same grid (a total number of N=`r N` evenly spaced points) on $[-2\pi, 2\pi]$. The observed data are the summation of $u(x_{i})$ and $i.i.d.$ normal noise $\epsilon_{j} \sim N(0, \sigma^2)$, $\sigma = `r sd1`$.
+
+We compared the use of optimal adaptive bandwidth with fixed bandwidth (with $\log_{10} b$ ranges from `r min.logb` to `r max.logb`) in Gaussian kernel smoother.  The discrete data were smoothed by different choice of bandwidths and compared with the true underlying function $u(x)$. This simulation was repeated for $m=`r reps`$ times, and we use MSE averaged over all $x$ and repetitions to evaluate the performance of these methods.
+
+
+```{r Sim2, fig.cap="Relationship between the smoothing bandwidth and mean MSE. The thick horizontal broken line on the bottom represents the mean MSE of the optimal adaptive kernel smoother; dots and thin solid curve represent the mean MSE obtained from kernel smoother with various fixed bandwidths; dotted curves represent +/- two standard errors from the mean MSEs. "}
+MSEtab <- matrix(0, nrow=reps, ncol=nb+1)
+colnames(MSEtab) <- c("Adaptive", paste0("logb=",logbs))
+set.seed(123)
+for (j in 1:reps){
+  print(paste0("Repetition: ", j))
+  y <- u + sd1*rnorm(N)
+  yhat.adapt <- ks(x, y, bandwidth=b, type = "circular")
+  yhat.fixed <- sapply(logbs, function(lb) ks(x,y,bandwidth=10^lb, type = "circular"))
+  Res <- sweep(cbind(yhat.adapt,yhat.fixed), 1, u)
+  MSEtab[j,] <- colMeans(Res^2)
+}
+  
+MSE.mean <- colMeans(MSEtab); MSE.se <- apply(MSEtab, 2, sd)/sqrt(reps)
+plot(logbs, MSE.mean[-1], type="b", ylim=range(MSE.mean),
+     xlab="log-bandwidth", ylab="Mean MSE")
+## +/- 2*STDERR
+lines(logbs,MSE.mean[-1]+2*MSE.se[-1], lty=3)
+lines(logbs,MSE.mean[-1]-2*MSE.se[-1], lty=3)
+abline(h=MSE.mean[1], lwd=2, lty=2)
+```
+
+
+From this figure, we see that the adaptive smoother cannot beat the fixed bandwidth smoother. Fixed bandwidth smoother with `r names(which(MSE.mean==min(MSE.mean)))` achieved the smallest mean MSE. 
+
+Finally, we take an arbitrary repetition (the last repetition) and show the quality of smoothing by the adaptive smoother and several choices of fixed bandwidths.
+
+
+```{r Sim2.smoothing.plot, fig.cap="The true function and functions estimated by various smoothing methods. True underlying function is marked in black, adaptive smoothing in red, two choices of fixed bandwidth parameters are in green (small bandwidth, $\\log_{10} b=-0.6$) and blue (the smallest fixed bandwidth, $\\log_{10} b=0$). The left panel shows all data points, and the right panel is a zoomed-in version which focuses on the right boundary. ", fig.width=12, fig.height=6}
+
+plot(x, y, pch="."); lines(x,u)
+lines(x, yhat.adapt, col="red")
+lines(x, yhat.fixed[, 5], col="green")
+lines(x, yhat.fixed[, 6], col="blue")
+
+```
+
+
+
+
+
+
+
+
+
 
 
 ```{r temp.area, eval=FALSE}

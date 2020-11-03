@@ -16,6 +16,33 @@
 \label{sec:notes}
 
 \begin{itemize}
+% 11/03/2020  
+\item 11/03/2020. We implemented circular smoother on both fixed bandwidth and adaptive bandwidth scenarios; and did the corresponding simulation. We noticed adaptive bandwidth cannot beat the optimal fixed bandwidth. Fixed bandwidth achieve the smallest MSE in our $y=\sin(x)$ setting. We also noticed the circular smoother performs better than Euclidean smoother in the circular data ($y=\sin(x)$). 
+\begin{verbatim}
+           euclidean   circular
+Adaptive  0.19821445 0.19821445
+logb=-3   1.00313133 1.00313133
+logb=-2.4 1.00313133 1.00313133
+logb=-1.8 1.00313133 1.00313133
+logb=-1.2 0.11346202 0.11227971
+logb=-0.6 0.02875581 0.02717735
+logb=0    0.08004308 0.08145240
+logb=0.6  0.44585526 0.52684029
+logb=1.2  0.49326980 0.50454607
+logb=1.8  0.50018979 0.50094139
+logb=2.4  0.50068896 0.50068896
+logb=3    0.50068896 0.50068896
+\end{verbatim}
+
+TODOLIST:
+  \begin{enumerate}
+    \item 
+    \item 
+  \end{enumerate} 
+
+
+
+% 10/27/2020  
 \item 10/27/2020. We reviewed Dr. Qiu's code/documentation. Todos:
   \begin{enumerate}
   \item Compare our old code with Dr. Qiu's new code one more time.
