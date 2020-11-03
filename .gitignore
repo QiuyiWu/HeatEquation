@@ -7,4 +7,6 @@ src/*/figure-latex
 latex/*.aux
 latex/*.auto
 latex/*.log
+latex/*.fls
+latex/*.fdb_latexmk
 latex/*.synctex.gz
