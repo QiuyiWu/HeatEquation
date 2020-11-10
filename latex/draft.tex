@@ -16,8 +16,8 @@
 \label{sec:notes}
 
 \begin{itemize}
-% 11/03/2020  
-\item 11/03/2020. We implemented circular smoother on both fixed bandwidth and adaptive bandwidth scenarios; and did the corresponding simulation. We noticed adaptive bandwidth cannot beat the optimal fixed bandwidth. Fixed bandwidth achieve the smallest MSE in our $y=\sin(x)$ setting. We also noticed the circular smoother performs better than Euclidean smoother in the circular data ($y=\sin(x)$). 
+% 11/10/2020  
+\item 11/10/2020. We implemented circular smoother on both fixed bandwidth and adaptive bandwidth scenarios; and did the corresponding simulation. We noticed for the circular data, the adaptive bandwidth cannot beat the optimal fixed bandwidth. Fixed bandwidth achieve the smallest MSE in our $y=\sin(x)$ setting. We also noticed the circular smoother performs better than Euclidean smoother in the circular data ($y=\sin(x)$). 
 \begin{verbatim}
            euclidean   circular
 Adaptive  0.19821445 0.19821445
@@ -34,10 +34,20 @@ logb=2.4  0.50068896 0.50068896
 logb=3    0.50068896 0.50068896
 \end{verbatim}
 
+
 TODOLIST:
   \begin{enumerate}
-    \item 
-    \item 
+    \item Compare MSE at 2 boundaries 
+    \item manually do the smoothing for certain points, compare the two bandwidth (adaptive vs fixed); expected MSE and empirical MSE should agree. Two scenarios:
+    \begin{enumerate}
+    \item manual result doesn't equal to the automatic one, debug the result
+    \item manual result equal to the auto one. Seek the reason: Taylor expansion is not good enough, higher order term is needed (More observation, smaller bandwidth, smaller window)
+    \end{enumerate}
+    \item Future: explore the inhomogeneous heat equation (adaptive $\lambda(x)$) 
+    $$\frac{\partial f(x,t)}{\partial t}  = \Delta f = \frac{\partial f}{\partial x}[\lambda(x)\frac{\partial f}{\partial x}] \neq  \lambda(x)\frac{\partial^2 f}{
+    \partial x^2} $$
+
+    Google the connection between adaptive smoothing and inhomogeneous heat equation 
   \end{enumerate} 
 
 
