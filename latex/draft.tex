@@ -4,6 +4,9 @@
 \usepackage{amssymb} 
 \usepackage{soul}
 \usepackage{ulem}
+\usepackage{graphicx}
+\usepackage{grffile} % allow use .eps files
+\usepackage{float}
 
 \title{Kernel Smoothing And Heat Equation}
 \date{\today}
@@ -16,6 +19,28 @@
 \label{sec:notes}
 
 \begin{itemize}
+% 12/01/2020  
+\item 12/01/2020. 
+\begin{figure}[H]
+\includegraphics[width=\linewidth]{pic/sim.plot1.eps}
+\includegraphics[width=\linewidth]{pic/sim.plot2.eps}
+\includegraphics[width=\linewidth]{pic/sim.plot3.eps}
+\end{figure}
+
+
+
+% 11/17/2020  
+\item 11/17/2020. 
+
+TODOLIST:
+\begin{enumerate}
+\item Editor: Emacs, Vim
+\item Learn: Command line, \texttt{ssh}, \texttt{zsh},\texttt{bash}, to remotely control.
+\item \texttt{.eps} $\rightarrow$ \texttt{.eps}; change \texttt{postscript()} to \texttt{pdf(), png(), tiff()}
+\item Residual trend means under-smoothing (overfitting)
+\item manually compute the 2 extreme points (second order taylor expansion) -- empirical MSE and theoretical MSE
+\end{enumerate}
+
 % 11/10/2020  
 \item 11/10/2020. We implemented circular smoother on both fixed bandwidth and adaptive bandwidth scenarios; and did the corresponding simulation. We noticed for the circular data, the adaptive bandwidth cannot beat the optimal fixed bandwidth. Fixed bandwidth achieve the smallest MSE in our $y=\sin(x)$ setting. We also noticed the circular smoother performs better than Euclidean smoother in the circular data ($y=\sin(x)$). 
 
@@ -169,7 +194,7 @@ Set $h(b) = \frac{\sigma^2}{2\sqrt{\pi}}\cdot \frac{1}{\sqrt{b}}+   \frac{1}{4} 
 
 
 
-\end{document}
+
 
 
 
