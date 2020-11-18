@@ -247,7 +247,7 @@ ks <- function(x, y, bandwidth, min.bandwidth="auto", max.bandwidth="auto", max.
   type <- match.arg(type)
   N <- length(x); xsteps <- diff(x); xrange <- max(x)-min(x)
   if (min.bandwidth=="auto") min.bandwidth <- min(xsteps)
-  if (max.bandwidth=="auto") max.bandwidth <- 10*xrange
+  if (max.bandwidth=="auto") max.bandwidth <- xrange*10  # initially 10*xrange
   if (max.window=="auto") max.window <- xrange/5  # initially xrange/5
   ## classify the smoothing strategies based on bandwidth
   if (length(bandwidth)==1){ #fixed bandwidth
@@ -258,7 +258,7 @@ ks <- function(x, y, bandwidth, min.bandwidth="auto", max.bandwidth="auto", max.
       ## just return the simple sample mean
       yhat <- rep(mean(y), N)
     } else { #this is the general case
-      smooth.window <- min(400*bandwidth, max.window)  # initially 4*bandwidth
+      smooth.window <- min(4*bandwidth, max.window) # initially 4*bandwidth
       yhat <- ks.fixed(x, y, bandwidth, smooth.window, type=type)
     }
   } else if (length(bandwidth)!=N){
@@ -266,8 +266,8 @@ ks <- function(x, y, bandwidth, min.bandwidth="auto", max.bandwidth="auto", max.
   } else {
     ## process bandwith and smooth.window for ks.variable()
     bandwidth <- replace(bandwidth, bandwidth<=min.bandwidth, 0)
-    bandwidth <- replace(bandwidth, bandwidth>=max.bandwidth, Inf)
-    smooth.window <- pmin(400*bandwidth, max.window)  # initially 4*bandwidth
+    bandwidth <- replace(bandwidth, bandwidth>=max.bandwidth, Inf) 
+    smooth.window <- pmin(4*bandwidth, max.window) # initially 4*bandwidth
     yhat <- ks.variable(x, y, bandwidth, smooth.window)
   }
   return(yhat)
