@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1605649935 "draft.tex" "draft.pdf" "draft" 1605656004
+["pdflatex"] 1605678753 "draft.tex" "draft.pdf" "draft" 1605678754
   "/usr/local/texlive/2016/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/jknappen/ec/ectt1000.tfm" 1136768653 1536 06717a2b50de47d4087ac0e6cd759455 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -86,12 +86,12 @@
   "/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1472958384 1888048 f2c5faed5981a516f406b2ccc20bff71 ""
   "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1463979169 3873397 413fbfbbedb8e719ddc392043a7add02 ""
   "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
-  "draft.aux" 1605649935 369 720a5c57c6390afae2e7e428bbfb9c68 ""
-  "draft.tex" 1605649934 10281 a038b29ce1dd9c5fbf3fe4d277e85ed2 ""
-  "pic/sim.plot1.eps" 1605621678 70711 b81b91f0b6a7824be839c05569a33351 ""
-  "pic/sim.plot2.eps" 1605621253 73642 f9d889a3628ed95081f5d02753b7f634 ""
-  "pic/sim.plot3.eps" 1605622778 73642 ac6c14d4f1c648828bd07547befe4df9 ""
+  "draft.aux" 1605678754 369 d8a750ab95dfcc2ba27c37d2fdd93aad ""
+  "draft.tex" 1605678031 10313 00e6787e892b8c6267e7b44f5b17381b ""
+  "pic/sim.plot1.eps" 1605652917 65160 0128a2653c25cedd5e77281a1e8aa5e1 ""
+  "pic/sim.plot2.eps" 1605668736 67010 98cf14d7553907f284649dae54eab5fc ""
+  "pic/sim.plot3.eps" 1605673731 67420 513f845d24a759a9f4b602f55eeddbe8 ""
   (generated)
   "draft.log"
-  "draft.aux"
   "draft.pdf"
+  "draft.aux"
