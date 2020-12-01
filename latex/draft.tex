@@ -27,6 +27,21 @@
 \includegraphics[width=\linewidth]{pic/sim.plot3.eps}
 \end{figure}
 
+The boundary behavior of the adaptive scenario is not ideal. We then modified $\texttt{max.window}$ from $\texttt{xrange/5}$ to $\texttt{xrange/0.1}$. The situation gets better. 
+
+We explored the extreme points by 
+\begin{enumerate}
+\item computing the difference between the empirical value \texttt{mean(y.within.window)} and the true value \texttt{u}
+\item comparing the empirical MSE with the theoretical MSE of the extreme points
+\end{enumerate}
+
+Denote $\texttt{max.window} = \frac{\texttt{xrange}}{k}$, we plot the difference between the empirical value \texttt{mean(y.within.window)} and the true value \texttt{u} with respect to $k$ at extreme points. We noticed when $k>2$, the difference would increase tremendously (Figure below).
+
+\begin{figure}[H]
+\includegraphics[width=\linewidth]{pic/sim.plot4.eps}
+\includegraphics[width=\linewidth]{pic/sim.plot5.eps}
+\caption{Extreme point (first point) of $y=\sin(x)$ with $\sigma = 1$ and  $\sigma = 0.1$ scenarios. We use log-scale plot to see if the difference would converge asymptomatically as $k\rightarrow +\infty$. The red line denotes when $k=2$, the difference has a jump.} 
+\end{figure}
 
 
 % 11/17/2020  
