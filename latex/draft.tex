@@ -27,7 +27,7 @@
 \includegraphics[width=\linewidth]{pic/sim.plot3.eps}
 \end{figure}
 
-The boundary behavior of the adaptive scenario is not ideal. We then modified $\texttt{max.window}$ from $\texttt{xrange/5}$ to $\texttt{xrange/0.1}$. The situation gets better. 
+Although the adaptive bandwidth smoother perform well in general, but the boundary behavior of the adaptive bandwidth smoother is not ideal. We then modified $\texttt{max.window}$ from $\texttt{xrange/5}$ to $\texttt{xrange/0.1}$. The situation gets better. 
 
 We explored the extreme points by 
 \begin{enumerate}
@@ -42,6 +42,40 @@ Denote $\texttt{max.window} = \frac{\texttt{xrange}}{k}$, we plot the difference
 \includegraphics[width=\linewidth]{pic/sim.plot5.eps}
 \caption{Extreme point (first point) of $y=\sin(x)$ with $\sigma = 1$ and  $\sigma = 0.1$ scenarios. We use log-scale plot to see if the difference would converge asymptomatically as $k\rightarrow +\infty$. The red line denotes when $k=2$, the difference has a jump.} 
 \end{figure}
+
+
+Now we compare the empirical MSE with the theoretical MSE on the extreme point at the boundary. 
+
+\textit{Flash back:}
+$$\text{MSE}_j=  \frac{\sigma^2}{2\sqrt{\pi \cdot b}}  + \left[\frac{\partial^2 u}{2\partial x^2}\cdot b \right]^2$$
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l| l}
+\hline\hline
+& (theoretical MSE =$1.96\times 10^{-7}$) & (theoretical MSE =$3.95\times 10^{-7}$)\\
+k & empirical MSE  ($\sigma=1$) &empirical MSE  ($\sigma=0.1$) \\\hline 
+0.1&0.0019 $(8.15\times 10^{-6})$ & 0.0021 $(7.59\times 10^{-6})$\\
+1 & 0.0020 $(7.80\times 10^{-6})$ &0.0019 $(6.76\times 10^{-6})$\\
+2 & 0.0020 $(8.09\times 10^{-6})$ &0.0019 $(7.09\times 10^{-6})$\\
+2.1 & 0.4448 $(0.0072)$ &0.4408 (0.0071)\\
+3 & 0.5124 $(0.0128)$ & 0.5220 (0.0123)\\
+4 & 0.4107 $(0.0122)$ & 0.4070 (0.0131)\\
+5 & 0.3116 $(0.0124)$ & 0.3147 (0.0136)\\\hline
+\end{tabular}
+\caption{1000 times simulation for empirical MSE at extreme point at boundary}
+\end{table}
+
+\begin{figure}[H]
+\includegraphics[width=\linewidth]{pic/sim.plot6.eps}
+\includegraphics[width=\linewidth]{pic/sim.plot7.eps}
+\includegraphics[width=\linewidth]{pic/sim.plot8.eps}
+\includegraphics[width=\linewidth]{pic/sim.plot9.eps}
+\end{figure}
+
+
+
+
 
 
 % 11/17/2020  
