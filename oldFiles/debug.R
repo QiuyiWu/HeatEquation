@@ -1,26 +1,14 @@
 simk <- function(k,y){
   smooth.window = 2*pi/k
-  y.within.window.R <- c(); dist.R <- c()
-  j <- 0; dj <- 0
-  while (dj<=smooth.window & j<=N-i) {
-    dj <- pmin(abs(x[i+j]-x[i]), x[length(x)]- x[1] - abs(x[i+j]-x[i])) 
-    dist.R <- c(dist.R, dj)
-    y.within.window.R <- c(y.within.window.R, y[i+j])
-    j <- j+1
-  }
   
-  if (dj>smooth.window) {
-    y.within.window.R <- y.within.window.R[-j]
-    dist.R <- dist.R[-j]
-  }
+  dj <- pmin(abs(x-x[1]), x[length(x)]- x[1] - abs(x-x[1]))
+  y.within.window <- y[dj <= smooth.window]
+  #dd = dj[dj <= smooth.window]
+  #w <- dnorm(dd, sd=b[1])
   
-  dd = dist.R
-  y.within.window = y.within.window.R
-  dnorm(dd, sd=b[1])
-  
-  sse = (mean(y.within.window)- u[1])^2
-  return(sse)
-  #return(mean(y.within.window)- u[1])
+  #sse = (mean(y.within.window)- u[1])^2
+  #return(sse)
+  return(mean(y.within.window)- u[1])
 }
 
 
@@ -34,7 +22,7 @@ for (m in 1:1000) {
 (VAR = var(SE))
 (D2u[1]*b[1]/2)^2+sd1^2/(2*sqrt(pi*b[1]))
 
-(T.MSE = (D2u[126]*b/2)^2+sd1^2/(2*sqrt(pi*b)))
+(T.MSE = (D2u[1]*b[1]/2)^2+sd1^2/(2*sqrt(pi*b[1])))
 
 
 

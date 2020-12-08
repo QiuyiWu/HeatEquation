@@ -66,10 +66,10 @@ lines(x, yhat.fixed[, 11], col=4)
 ############################################
 
 ## specify parameters that generates data in Sim2
-N <- 501
+N <- 501   # initially 501
 ## Note that you shouldn't use "sd" as an object; it *replaces* an
 ## important system function sd()!!
-sd1 <- 1; var1 <- sd1^2
+sd1 <- 0.1; var1 <- sd1^2  # sd initially 1
 
 ## an evenly-spaced grid of x defined 
 x <- seq(-pi, pi, length.out=N); dx <- range(x)/(N-1)
@@ -137,7 +137,7 @@ legend("topleft", c("true function","Adaptive","logb=-0.6 (Opt)","logb=0"), col 
 
 #### save plots #########
 
-filename = paste('sim.plot8.eps')
+filename = paste('sim.plot11.eps')
 setEPS()
 postscript(filename,height=3,width=10)
 layout(matrix(1:3,1,3, byrow = T))
@@ -145,7 +145,7 @@ layout(matrix(1:3,1,3, byrow = T))
 
 MSE.mean <- colMeans(MSEtab); MSE.se <- apply(MSEtab, 2, sd)/sqrt(reps)
 plot(logbs, MSE.mean[-1], type="b", ylim=range(MSE.mean),
-     xlab="log-bandwidth", ylab="Mean MSE", main = "max.bandwidth = xrange/0.1")
+     xlab="log-bandwidth", ylab="Mean MSE", main = "max.bandwidth = xrange/5")
 ## +/- 2*STDERR
 lines(logbs,MSE.mean[-1]+2*MSE.se[-1], lty=3)
 lines(logbs,MSE.mean[-1]-2*MSE.se[-1], lty=3)
@@ -153,7 +153,7 @@ abline(h=MSE.mean[1], lwd=2, lty=2)
 
 
 plot(x,Res[,1], ylim = c(-1,1),type = "l", ylab = "residual",
-     main = expression(paste("Resudial Plot, ",sigma," = 1, range = [",-pi,",",pi,"]")), col = 2)
+     main = expression(paste("Resudial Plot, ",sigma," = 0.1, range = [",-pi,",",pi,"]")), col = 2)
 lines(x,Res[,6],  col = 3)
 lines(x,Res[,7],  col = 4)
 legend("top", c("Adaptive","logb=-0.6 (Opt)", "logb=0"), col =2:4, pch = 20 )
