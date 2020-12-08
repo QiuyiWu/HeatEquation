@@ -64,8 +64,14 @@ k & empirical MSE  ($\sigma=1$) &empirical MSE  ($\sigma=0.1$) \\\hline
 
 TODOLIST:
 \begin{enumerate}
-\item 
-\item
+\item Check theoretical MSE vs empirical MSE
+$$\sin^2(t) = \sin(t) - \sin(t_0)- \cos(t_0)(t-t_0)$$
+\begin{itemize}
+\item bias$^2$ $\propto \sin^2(t)$
+\item variance $\propto \frac{\sigma^2}{n_{\texttt{neighbor}}}$
+\end{itemize}
+increase $k$ to narrow the smooth.window $ \frac{\texttt{xrange}}{k}$
+\item Map non-constant adaptive Gaussian smoother back to inhomogeneous heat equation 
 \end{enumerate}
 
 
