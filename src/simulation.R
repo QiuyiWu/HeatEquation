@@ -74,9 +74,9 @@ sd1 <- 0.1; var1 <- sd1^2  # sd initially 1
 ## an evenly-spaced grid of x defined 
 x <- seq(-pi, pi, length.out=N); dx <- range(x)/(N-1)
 ## the true function to be estimated
-u <- sin(x)
+u <- sin(x)+cos(x)
 ## its second order derivative
-D2u <- -sin(x)
+D2u <- -sin(x)-cos(x)
 ## the optimal bandwidth
 b = (var1/(2*sqrt(pi)*D2u^2))^(2/5)
 

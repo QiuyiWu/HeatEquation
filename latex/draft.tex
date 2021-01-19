@@ -19,6 +19,42 @@
 \label{sec:notes}
 
 \begin{itemize}
+ % 01/19/2021  
+\item 01/19/2021. Checked theoretical MSE vs empirical MSE at the whole scale. Explored the scenarios with increasing k value (to narrow the smooth.window) and increasing sample size.\\
+We noticed that the empirical MSE is smaller than theoretical MSE. And theoretical has certain pattern while empirical MSE is more in randomness. We suspect our theoretical derivation (Eq (1)) is incorrect. 
+
+\begin{equation}
+         \text{MSE}_j=  \frac{\sigma^2}{2\sqrt{\pi} \cdot \sqrt{b}}  + \left[\frac{\partial^2 u}{2\partial x^2}\cdot b \right]^2
+\end{equation}
+
+We found the MSE of KDE online (UW lecture notes) expressed as (Eq (3))
+\begin{align}
+         \text{MSE}_j &= (nh)^{-1}f(x)\int K(z)^2 dz + \left(\frac{f''(x)}{2} h^2 \int z^2K(z)dz \right)^2 \\
+         &= \frac{u}{2\sqrt{\pi} \cdot n\sqrt{b}}  + \left[\frac{\partial^2 u}{2\partial x^2}\cdot b \right]^2
+\end{align}
+
+We then use their theoretical result but it still shows the certain pattern that our empirical MSE didn't reveal. We are wondering if our theoretical result is problematic, why our emperical result, which uses adaptive bandwidth ($b =\left(\frac{\sigma^2}{2\sqrt{\pi} u''^2}\right)^{\frac{2}{5}} $), still generates quite good estimation?
+
+
+\begin{figure}[H]
+\includegraphics[width=\linewidth]{pic/sim.diff1.eps}
+\includegraphics[width=\linewidth]{pic/sim.diff2.eps}
+\end{figure}
+
+TODOLIST:
+\begin{enumerate}
+\item rederivate formular (N should be in the denominator)
+\item plot variance and bias seperately to see which one is more problematic
+\item adaptive bandwidth should give constant MSE
+\item Think about non-constant adaptive Gaussian smoother and inhomogeneous heat equation:
+$$ \frac{\partial u}{\partial t} = \frac{\partial}{\partial x}(c \cdot \frac{\partial u}{\partial t} ) =  c\cdot u_x''$$
+when $c$ is not a constant but a function $c(x)$, the equation becomes 
+$$ \frac{\partial u}{\partial t} = c'(x)u_x' + c\cdot u_x''$$
+$c'(x)u_x' $ can be understood as tuning parameter in heat equation, where $c$ shows how fast the heat transform from one locaton to another (spatial discrepancy). We shall explore the relationship between $c$ in heat equation and bandwidth $b$ in kernel smoother. 
+\end{enumerate}
+
+
+
   % 12/08/2020  
 \item 12/08/2020. 
 Fixed the boundary issue for circular situation.

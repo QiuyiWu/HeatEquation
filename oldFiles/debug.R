@@ -1,28 +1,156 @@
-simk <- function(k,y){
+setwd("~/Desktop/Research/UR/HeatEquation/latex/pic")
+a=11
+
+simk <- function(k,y,a){
   smooth.window = 2*pi/k
   
-  dj <- pmin(abs(x-x[1]), x[length(x)]- x[1] - abs(x-x[1]))
+  dj <- pmin(abs(x-x[a]), x[length(x)]- x[a] - abs(x-x[a]))
   y.within.window <- y[dj <= smooth.window]
-  #dd = dj[dj <= smooth.window]
-  #w <- dnorm(dd, sd=b[1])
   
-  #sse = (mean(y.within.window)- u[1])^2
-  #return(sse)
-  return(mean(y.within.window)- u[1])
+  
+  #dd = dj[dj <= smooth.window]
+  #w <- dnorm(dd, sd=b[a])
+  
+  sse = (mean(y.within.window)- u[a])^2
+  return(sse)
+  #return(mean(y.within.window)- u[a])
 }
 
+# k=5
+# SE = NULL
+# for (m in 1:1000) {
+#   y <- u + sd1*rnorm(N)
+#   SE[m] = simk(k,y)
+# }
+# (MSE = mean(SE))
+# # (VAR = var(SE))
+# (D2u[a]*b[a]/2)^2+sd1^2/(2*sqrt(pi*b[a]))
+# 
 
-k=5
-SE = NULL
+k=25
+SE = array(dim = c(1000, length(x)))
 for (m in 1:1000) {
-  y <- u + sd1*rnorm(N)
-  SE[m] = simk(k,y)
+  for (a in 1:length(x)) {
+    y <- u + sd1*rnorm(N)
+    SE[m,a] = simk(k,y,a)
+  }
 }
-(MSE = mean(SE))
-(VAR = var(SE))
-(D2u[1]*b[1]/2)^2+sd1^2/(2*sqrt(pi*b[1]))
 
-(T.MSE = (D2u[1]*b[1]/2)^2+sd1^2/(2*sqrt(pi*b[1])))
+
+
+theoryMSE = NULL
+for (i in 1:501) {
+  theoryMSE[i] = (D2u[i]*b[i]/2)^2+sd1^2/(2*sqrt(pi*b[i]))
+}
+diff = colMeans(SE) - theoryMSE
+plot(x, diff)
+
+
+
+####################################################################################
+N <-501   # initially 501
+## Note that you shouldn't use "sd" as an object; it *replaces* an
+## important system function sd()!!
+sd1 <- 0.1; var1 <- sd1^2  # sd initially 1
+
+## an evenly-spaced grid of x defined 
+x <- seq(-pi, pi, length.out=N); dx <- range(x)/(N-1)
+## the true function to be estimated
+u <- sin(x)
+## its second order derivative
+D2u <- -sin(x)
+## the optimal bandwidth
+b = (var1/(2*sqrt(pi)*D2u^2))^(2/5)
+
+
+simk <- function(y,x,u,k){
+  yhat = ks(x, y, k,bandwidth=b, type = "Euclidean")
+  sse = (yhat - u)^2
+  return(sse)
+}
+
+simk2 <- function(y,x,u,k){
+  yhat = ks(x, y, k,bandwidth=b, type = "circular")
+  sse = (yhat - u)^2
+  return(sse)
+}
+
+
+SE = array(dim = c(500, length(x)))
+for (m in 1:500) {
+    y <- u + sd1*rnorm(N)
+    SE[m,] = simk(y,x,u,5)
+    print(m)
+}
+
+SE2 = array(dim = c(500, length(x)))
+for (m in 1:500) {
+  y <- u + sd1*rnorm(N)
+  SE2[m,] = simk2(y,x,u,5)
+  print(m)
+}
+
+
+theoryMSE = NULL
+theoryMSE2 = NULL
+for (i in 1:501) {
+  theoryMSE[i] = (D2u[i]*b[i]/2)^2+ sd1^2/(2*sqrt(pi*b[i]))
+  theoryMSE2[i] = (D2u[i]*b[i]/2)^2 + u[i]/(2*N*sqrt(pi*b[i]))
+}
+diff = colMeans(SE) - theoryMSE
+diff2 = colMeans(SE2) - theoryMSE
+#apply(SE, 2, sd)
+
+plot(x[-c(1:20,480:501)], diff[-c(1:20,480:501)], type = 'l')
+
+
+
+
+filename = paste('sim.diff1.eps')
+setEPS()
+postscript(filename,height=6,width=15)
+layout(matrix(1:2,1,2, byrow = T))
+
+plot(x,diff, pch = 20, col=4,main = "MSE Diff (k=5, N=501, N_sim=500)", ylab = 'MSE difference')
+points(x, diff2, col=2, pch = 20,title = "Euclidean")
+legend('top', c("circular",'euclidean'), col = c(2,4),pch = 20, bty='n')
+
+plot(x,diff2, pch = 20, col=2,main = "Zoom-In version", ylab = 'MSE difference')
+points(x, diff, pch=20,col=4, title = "Euclidean")
+legend('top', c("circular",'euclidean'), col = c(2,4),pch = 20, bty='n')
+dev.off()
+
+
+filename = paste('sim.diff2.eps')
+setEPS()
+postscript(filename,height=4,width=15)
+layout(matrix(1:3,1,3, byrow = T))
+plot(x, colMeans(SE2),col=2,pch=20, main="Empirical MSE")
+points(x, colMeans(SE),pch=20,col=4 )
+legend('top', c("circular",'euclidean'), col = c(2,4),pch = 20, bty='n')
+
+plot(x, theoryMSE,pch=20, main="Our Theoretical MSE" )
+plot(x, theoryMSE2,pch=20, main="Their Theoretical MSE" )
+dev.off()
+
+
+
+
+
+
+plot(x,apply(SE, 2, sd))
+
+
+####################################################################################
+
+
+
+
+
+
+
+
+
 
 
 
