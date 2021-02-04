@@ -48,7 +48,7 @@ plot(x, diff)
 
 
 ####################################################################################
-N <-501   # initially 501
+N <-1001   # initially 501
 ## Note that you shouldn't use "sd" as an object; it *replaces* an
 ## important system function sd()!!
 sd1 <- 0.1; var1 <- sd1^2  # sd initially 1
@@ -60,42 +60,49 @@ u <- sin(x)
 ## its second order derivative
 D2u <- -sin(x)
 ## the optimal bandwidth
-b = (var1/(2*sqrt(pi)*D2u^2))^(2/5)
+#b = (var1/(2*sqrt(pi)*D2u^2))^(2/5)
+b = rep(0.2, N)
 
-
-simk <- function(y,x,u,k){
+simk <- function(y,x,u,k,b){
   yhat = ks(x, y, k,bandwidth=b, type = "Euclidean")
   sse = (yhat - u)^2
   return(sse)
 }
 
-simk2 <- function(y,x,u,k){
+simk2 <- function(y,x,u,k,b){
   yhat = ks(x, y, k,bandwidth=b, type = "circular")
   sse = (yhat - u)^2
   return(sse)
 }
 
 
-SE = array(dim = c(500, length(x)))
-for (m in 1:500) {
+SE = array(dim = c(50, length(x)))
+for (m in 1:50) {
     y <- u + sd1*rnorm(N)
-    SE[m,] = simk(y,x,u,5)
+    SE[m,] = simk(y,x,u,5,b)
     print(m)
 }
 
 SE2 = array(dim = c(500, length(x)))
+y = array(dim = c(500, length(x)))
+yhat = array(dim = c(500, length(x)))
 for (m in 1:500) {
-  y <- u + sd1*rnorm(N)
-  SE2[m,] = simk2(y,x,u,5)
+  y[m,] <- u + sd1*rnorm(N)
+  #SE2[m,] = simk2(y,x,u,5,b)
+  yhat[m,] = ks(x, y[m,], bandwidth=b, type = "circular")
   print(m)
 }
 
+variance = colMeans((yhat-matrix(rep(colMeans(yhat),500), nrow = 500, byrow = T ))^2)
+biass = (colMeans(yhat)-u)^2
 
 theoryMSE = NULL
 theoryMSE2 = NULL
-for (i in 1:501) {
-  theoryMSE[i] = (D2u[i]*b[i]/2)^2+ sd1^2/(2*sqrt(pi*b[i]))
-  theoryMSE2[i] = (D2u[i]*b[i]/2)^2 + u[i]/(2*N*sqrt(pi*b[i]))
+theoryMSE3 = NULL
+for (i in 1:N) {
+  theoryMSE[i] = (0.5*D2u[i]*b[i]^2)^2 #+sd1^2/(2*sqrt(pi*b[i]))#+
+  theoryMSE2[i] =   20*(D2u[i]*b[i]/(2*N))^2 #+sd1^2/(2*N*sqrt(pi*b[i]))# +
+  theoryMSE3[i] =   20*(D2u[i]^2*b[i]/(2*sqrt(N)))^2 #+sd1^2/(2*sqrt(pi*b[i]*N))# +
 }
 diff = colMeans(SE) - theoryMSE
 diff2 = colMeans(SE2) - theoryMSE
@@ -121,16 +128,24 @@ legend('top', c("circular",'euclidean'), col = c(2,4),pch = 20, bty='n')
 dev.off()
 
 
-filename = paste('sim.diff2.eps')
+filename = paste('sim.mse3.eps')
 setEPS()
-postscript(filename,height=4,width=15)
-layout(matrix(1:3,1,3, byrow = T))
-plot(x, colMeans(SE2),col=2,pch=20, main="Empirical MSE")
-points(x, colMeans(SE),pch=20,col=4 )
-legend('top', c("circular",'euclidean'), col = c(2,4),pch = 20, bty='n')
+postscript(filename,height=4,width=10)
+layout(matrix(1:2,1,2, byrow = T))
 
-plot(x, theoryMSE,pch=20, main="Our Theoretical MSE" )
-plot(x, theoryMSE2,pch=20, main="Their Theoretical MSE" )
+
+plot(x, theoryMSE,pch='.', main="Variance" , ylim = c(-0.005, 0.007), ylab = "variance")
+points(x, theoryMSE2,pch='.', main="Their Theoretical MSE", col= 2)
+points(x, theoryMSE3,pch='.', main="Their Theoretical MSE", col= 3 )
+points(x, variance, pch='.', col= 4)
+legend("bottom", c("var1","var2","var3","emperical"),pch=20, col = 1:4, bty='n')
+
+plot(x, theoryMSE2,pch='.', main="Zoom-In Variance", col= 2, ylim = c(-0.0001, 0.001), ylab = "variance")
+points(x, theoryMSE3,pch='.', main="Their Theoretical MSE", col= 3 )
+points(x, variance, pch='.', col= 4)
+legend("top", c("var2","var3","emperical"), pch=20, col = 2:4, bty='n')
+
+
 dev.off()
 
 
@@ -138,7 +153,28 @@ dev.off()
 
 
 
-plot(x,apply(SE, 2, sd))
+filename = paste('sim.mse4.eps')
+setEPS()
+postscript(filename,height=4,width=10)
+layout(matrix(1:2,1,2, byrow = T))
+
+
+plot(x, theoryMSE,pch='.', main="Bias^2" , ylim = c(-0.01, 0.01), ylab="bias^2")
+points(x, theoryMSE2,pch='.', main="Their Theoretical MSE", col= 2)
+points(x, theoryMSE3,pch='.', main="Their Theoretical MSE", col= 3 )
+points(x, biass, pch='.', col= 4)
+legend("bottom", c("bs1","bs2","bs3","emperical"),pch=20,col = 1:4, bty='n')
+
+plot(x, theoryMSE2,pch='.', main="Zoom-In Bias^2", col= 2, ylim = c(-0.0001, 0.001), ylab="bias^2")
+points(x, theoryMSE3,pch='.', main="Their Theoretical MSE", col= 3 )
+points(x, biass, pch='.', col= 4)
+legend("top", c("bs2","bs3","emperical"), pch=20, col = 2:4, bty='n')
+
+
+dev.off()
+
+
+
 
 
 ####################################################################################

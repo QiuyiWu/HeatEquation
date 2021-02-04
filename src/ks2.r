@@ -193,7 +193,7 @@ ks <- function(x, y, k,bandwidth, min.bandwidth="auto", max.bandwidth="auto", ma
   N <- length(x); xsteps <- diff(x); xrange <- max(x)-min(x)
   if (min.bandwidth=="auto") min.bandwidth <- min(xsteps)
   if (max.bandwidth=="auto") max.bandwidth <- xrange*10  # initially 10*xrange
-  if (max.window=="auto") max.window <- xrange/5  # initially xrange/5
+  if (max.window=="auto") max.window <- xrange/k # initially xrange/5
   ## classify the smoothing strategies based on bandwidth
   if (length(bandwidth)==1){ #fixed bandwidth
     if (bandwidth <= min.bandwidth) {

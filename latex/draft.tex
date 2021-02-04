@@ -7,6 +7,7 @@
 \usepackage{graphicx}
 \usepackage{grffile} % allow use .eps files
 \usepackage{float}
+\usepackage{color}
 
 \title{Kernel Smoothing And Heat Equation}
 \date{\today}
@@ -19,6 +20,92 @@
 \label{sec:notes}
 
 \begin{itemize}
+
+ % 02/02/2021  
+\item 02/02/2021. 
+
+We fixed the theoretical formula for both variance and bias:
+\begin{equation}
+         \text{MSE}_j=   {\color{red}\frac{L}{N-1}}\cdot \frac{\sigma^2}{2\sqrt{\pi} \cdot {\color{red}b}}  + \left[\frac{\partial^2 u}{2\partial x^2}\cdot b {\color{red}^2} \right]^2
+\end{equation}
+
+We plot the variance and bias$^2$ scenarios separately. 
+
+ 
+\begin{figure}[H]
+Plot sample size $N$ versus variance (left is the empirical variance mean, and right is the certain point variance.)\\
+\includegraphics[width=2.5in]{pic/variance.png}
+\includegraphics[width=2.5in]{pic/variance2.png}
+\end{figure}
+
+\begin{figure}[H]
+Plot smooth.window parameter $K$ versus variance\\
+\includegraphics[width=2.5in]{pic/K.png}
+\includegraphics[width=2.5in]{pic/K2.png}
+\end{figure}
+
+\begin{figure}[H]
+Plot sample size $N$ versus variance\\
+\includegraphics[width=1.55in]{pic/bias1.png}
+\includegraphics[width=1.55in]{pic/bias2.png}
+\includegraphics[width=1.55in]{pic/bias3.png}
+\end{figure}
+
+\begin{figure}[H]
+Plot sample size $N$ versus variance\\
+\includegraphics[width=2.5in]{pic/bias4.png}
+\includegraphics[width=2.5in]{pic/bias5.png}
+\end{figure}
+
+
+ % 01/26/2021  
+\item 01/26/2021. 
+
+In order to find out the reason that empirical MSE and theoretical MSE look so different, we split them into $\texttt{bias}^2$ and \texttt{variance}.
+
+For fixed bandwidth scenario, we tried with the below 3 possible theoretical MSE with sample size $N=501$ and simulation time $n=500$:
+
+\begin{equation}
+         \text{MSE}_j=  \frac{\sigma^2}{2\sqrt{\pi} \cdot \sqrt{b}}  + \left[\frac{\partial^2 u}{2\partial x^2}\cdot b \right]^2
+\end{equation}
+
+
+\begin{equation}
+         \text{MSE}_j=  \frac{\sigma^2}{2N\sqrt{\pi} \cdot \sqrt{b}}  + \frac{20}{N^2}\cdot\left[\frac{\partial^2 u}{2\partial x^2}\cdot b \right]^2
+\end{equation}
+
+\begin{equation}
+         \text{MSE}_j=  \frac{\sigma^2}{2\sqrt{N}\sqrt{\pi} \cdot \sqrt{b}}  + \frac{20}{N}\cdot\left[\frac{\partial^2 u}{2\partial x^2}\cdot b \right]^2
+\end{equation}
+
+
+Empirical MSE:
+\begin{align*}
+         \text{MSE}_j&=  \mathbb{E}[(\hat{y} - u)^2]\\
+         &= \mathbb{E}[(\hat{y} - \mathbb{E}(\hat{y}))^2] + \mathbb{E}[\mathbb{E} (\hat{y}) -u]^2\\ 
+          &= \texttt{var}(\hat{y}) + \texttt{bias}^2(\hat{y})
+\end{align*}
+
+
+
+\begin{figure}[H]
+\includegraphics[width=\linewidth]{pic/sim.mse.eps}
+\includegraphics[width=\linewidth]{pic/sim.mse2.eps}
+Increase sample size from N=501 to N=1001:\\
+\includegraphics[width=\linewidth]{pic/sim.mse3.eps}
+\includegraphics[width=\linewidth]{pic/sim.mse4.eps}
+\end{figure}
+
+TODOLIST:
+\begin{enumerate}
+\item plot \texttt{variance} vs sample size (N) plot to see the relationship
+\item take a close look of \texttt{bias} term: Taylor expansion on a fix point (eg.: $f(x) = \sin(x)$), to see if the first term goes to $f(x_0)$, second term goes to 0 and third term goes to $f''(x_0)b^2/2$
+\item After solve the fix bandwidth scenario issue, try adaptive bandwidth
+\end{enumerate}
+
+
+
+
  % 01/19/2021  
 \item 01/19/2021. Checked theoretical MSE vs empirical MSE at the whole scale. Explored the scenarios with increasing k value (to narrow the smooth.window) and increasing sample size.\\
 We noticed that the empirical MSE is smaller than theoretical MSE. And theoretical has certain pattern while empirical MSE is more in randomness. We suspect our theoretical derivation (Eq (1)) is incorrect. 
