@@ -10,12 +10,13 @@ sd1 <- 50; var1 <- sd1^2
 
 ## an evenly-spaced grid of x defined on [-5,5]
 x <- seq(-5, 5, length.out=N); dx <- 10/(N-1)
+L = diff(range(x))
 ## the true function to be estimated
 u <- x^4+600
 ## its second order derivative
 D2u <- 12*x^2
 ## the optimal bandwidth
-b = (var1/(2*sqrt(pi)*D2u^2))^(2/5)
+b = (L*var1/(2*sqrt(pi)*(N-1)*D2u^2))^(1/5)
 
 ## the fixed bandwidths
 min.logb <- -1; max.logb <- -0.7; nb <- 11
@@ -72,23 +73,24 @@ N <- 501   # initially 501
 sd1 <- 0.1; var1 <- sd1^2  # sd initially 1
 
 ## an evenly-spaced grid of x defined 
-x <- seq(-pi, pi, length.out=N); dx <- range(x)/(N-1)
+x <- seq(-pi/2, 0, length.out=N); dx <- range(x)/(N-1)
+L = diff(range(x))
 ## the true function to be estimated
-u <- sin(x)+cos(x)
+u <- sin(x)
 ## its second order derivative
-D2u <- -sin(x)-cos(x)
+D2u <- -sin(x)
 ## the optimal bandwidth
-b = (var1/(2*sqrt(pi)*D2u^2))^(2/5)
+b = (L*var1/(2*sqrt(pi)*(N-1)*D2u^2))^(1/5)
 
 
-plot(x, b, type="l", ylim=c(0,5), xlab="x", ylab="Adaptive bandwidth")
+plot(x, b, type="l",  xlab="x", ylab="Adaptive bandwidth")
 
 ## the fixed bandwidths
-min.logb <- -3; max.logb <- 3; nb <- 11
+min.logb <- -1; max.logb <- 0; nb <- 11
 logbs <- seq(min.logb, max.logb, length.out=nb)
 
 ## number of repetitions
-reps <- 50
+reps <- 100
 
 # Relationship between the smoothing bandwidth and mean MSE
 MSEtab <- matrix(0, nrow=reps, ncol=nb+1)
@@ -97,17 +99,25 @@ set.seed(123)
 for (j in 1:reps){
   print(paste0("Repetition: ", j))
   y <- u + sd1*rnorm(N)
-  yhat.adapt <- ks(x, y, bandwidth=b, type = "circular")
-  yhat.fixed <- sapply(logbs, function(lb) ks(x,y,bandwidth=10^lb, type = "circular"))
+  yhat.adapt <- ks(x, y, bandwidth=b, type = "Euclidean")
+  yhat.fixed <- sapply(logbs, function(lb) ks(x,y,bandwidth=10^lb, type = "Euclidean"))
   Res <- sweep(cbind(yhat.adapt,yhat.fixed), 1, u)
   MSEtab[j,] <- colMeans(Res^2)
 
 }
 
-
-
 MSE.mean <- colMeans(MSEtab); MSE.se <- apply(MSEtab, 2, sd)/sqrt(reps)
-plot(logbs, MSE.mean[-1], type="b", ylim=range(MSE.mean),
+
+
+new.max = function(x){quantile(x, probs = 0.975, na.rm = T)}
+new.min = function(x){quantile(x, probs = 0.025, na.rm = T)}
+plotCI(logbs, MSE.mean[-1], 
+       ui = apply(MSEtab,2,new.max), 
+       li = apply(MSEtab,2,new.min))
+
+
+
+plot(logbs, MSE.mean[-1], type="b", 
      xlab="log-bandwidth", ylab="Mean MSE")
 ## +/- 2*STDERR
 lines(logbs,MSE.mean[-1]+2*MSE.se[-1], lty=3)
@@ -115,14 +125,14 @@ lines(logbs,MSE.mean[-1]-2*MSE.se[-1], lty=3)
 abline(h=MSE.mean[1], lwd=2, lty=2)
 
 
-plot(x,Res[,1], ylim = c(-1,1),type = "l", ylab = "residual",main = "Resudial")
+plot(x,Res[,1], type = "l", ylab = "residual",main = "Resudial")
 lines(x,Res[,6],  col = 2)
 lines(x,Res[,7],  col = 3)
 lines(x,Res[,8],  col = 4)
 legend("top", c("Adaptive","logb=-0.6 (Opt)","logb=0","logb=0.6"), col =1:4, pch = 20 )
 
 
-plot(x, y, ylim = c(-1,1), pch='.', main = "True function vs Estimated functions")
+plot(x, y,pch='.', main = "True function vs Estimated functions")
 lines(x,u)
 lines(x, yhat.adapt, col=2)
 lines(x, yhat.fixed[, 3], col=7)

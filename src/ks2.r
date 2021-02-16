@@ -188,7 +188,7 @@ ks.variable <- function(x, y, bandwidth, smooth.window, type=c("Euclidean", "cir
 
 
 ## this is the main wrapper
-ks <- function(x, y, k,bandwidth, min.bandwidth="auto", max.bandwidth="auto", max.window="auto", type=c("Euclidean", "circular")){
+ks <- function(x, y, k=5,bandwidth, min.bandwidth="auto", max.bandwidth="auto", max.window="auto", type=c("Euclidean", "circular")){
   type <- match.arg(type)
   N <- length(x); xsteps <- diff(x); xrange <- max(x)-min(x)
   if (min.bandwidth=="auto") min.bandwidth <- min(xsteps)

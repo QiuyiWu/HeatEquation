@@ -21,6 +21,51 @@
 
 \begin{itemize}
 
+
+
+
+
+
+
+ % 02/08/2021  
+\item 02/08/2021. 
+\begin{equation}
+         b = \big( \frac{L\sigma^2}{2\sqrt{\pi}(N-1)f''}  \big)^{1/5}
+\end{equation}
+
+\begin{figure}[H]
+Plot MSE with logbandwidth (left: $y = x^4$; right: $y = \sin(x)$)\\
+\includegraphics[width=2.5in]{pic/mse.bw0.png}
+\includegraphics[width=2.5in]{pic/mse.bw.png}
+\end{figure}
+
+\begin{figure}[H]
+Plot MSE with logbandwidth with confidence interval \\($y = \sin(x)$, N = 2001, rep = 200)\\
+\includegraphics[width=2.5in]{pic/mse.ci0.png}
+\includegraphics[width=2.5in]{pic/mse.ci.png}
+\end{figure}
+
+
+\begin{figure}[H]
+Plot sample size $N$ versus bias (using adaptive bandwidth)\\
+\includegraphics[width=1.55in]{pic/bias6.png}
+\includegraphics[width=1.55in]{pic/bias7.png}
+\includegraphics[width=1.55in]{pic/bias8.png}
+\end{figure}
+
+
+
+\begin{figure}[H]
+We notice that when bandwidth is too small or too large, the values fall out of the smooth window (2 left figures: small fixed b; right figure: large fixed b)\\
+\includegraphics[width=1.55in]{pic/bias9.1.png}
+\includegraphics[width=1.55in]{pic/bias9.2.png}
+\includegraphics[width=1.55in]{pic/bias10.png}
+\end{figure}
+
+
+
+
+
  % 02/02/2021  
 \item 02/02/2021. 
 
@@ -45,17 +90,31 @@ Plot smooth.window parameter $K$ versus variance\\
 \end{figure}
 
 \begin{figure}[H]
-Plot sample size $N$ versus variance\\
+Plot sample size $N$ versus bias\\
 \includegraphics[width=1.55in]{pic/bias1.png}
 \includegraphics[width=1.55in]{pic/bias2.png}
 \includegraphics[width=1.55in]{pic/bias3.png}
 \end{figure}
 
 \begin{figure}[H]
-Plot sample size $N$ versus variance\\
+Plot sample size $N$ versus bias\\
 \includegraphics[width=2.5in]{pic/bias4.png}
 \includegraphics[width=2.5in]{pic/bias5.png}
 \end{figure}
+
+
+TODOLIST:
+\begin{enumerate}
+\item find the optimal smoother and redraw the figures. 
+\item prove adaptive smoothing is an advantage
+\item replace variate kernel smoother to heat equation
+\begin{align*}
+\frac{\partial u}{\partial t} &= \nabla_x (c(x)\nabla_x u) \\ 
+&\approx c(x) \nabla^2 u \\ 
+\end{align*}
+\item implement finite differential solver (compare diffusion coefficient)
+\item long term: finite different method (FDM) and finite element method (FEM) 
+\end{enumerate}
 
 
  % 01/26/2021  
